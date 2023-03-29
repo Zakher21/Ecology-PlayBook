@@ -1,0 +1,46 @@
+# Line Transect Sampling with Simulated Data
+
+Author: Your Name
+Date: Your Date
+
+To perform the analysis, you will need to run the following R code:
+
+```R
+# Install and load the Distance package
+install.packages("Distance")
+library(Distance)
+
+# Generate simulated data
+set.seed(42)
+simulated_data <- data.frame(
+  TransectID = rep(1:10, each = 10),
+  SpeciesID = sample(c("A", "B"), 100, replace = TRUE),
+  Individuals = sample(1:5, 100, replace = TRUE),
+  Distance = runif(100, min = 0, max = 100)
+)
+
+# Fit detection function
+detection_function <- ds(
+  data = simulated_data,
+  distance = "Distance",
+  key = "hn",
+  adjustment = "cos",
+  convert.units = 1
+)
+
+# Estimate abundance
+abundance_estimates <- dht(
+  model = detection_function,
+  flatfile = simulated_data,
+  strat_formula = ~1,
+  by = "SpeciesID"
+)
+
+# Extract abundance estimates for each species
+species_abundance <- abundance_estimates$individuals$D
+
+# Plot the detection function
+plot(detection_function)
+
+# Print estimated abundance for each species
+print(species_abundance)
